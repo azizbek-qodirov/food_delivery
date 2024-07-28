@@ -15,14 +15,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/change-role/{id}": {
-            "put": {
+        "/add-courier": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Changes the role of a user or admin. Only admins are allowed to use this function.",
+                "description": "Adds a courier to the system. Only admins are allowed to use this function.",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,9 +30,60 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-panel"
+                    "admin-panel \u003e courier"
                 ],
-                "summary": "Change a user's role",
+                "summary": "Add a courier",
+                "parameters": [
+                    {
+                        "description": "Courier data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddCourierReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Courier is added",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/ban/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Bans a user which doesn't allow user to use. Only admins are allowed to use this function.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-panel \u003e banning"
+                ],
+                "summary": "Ban a user",
                 "parameters": [
                     {
                         "type": "string",
@@ -51,22 +102,11 @@ const docTemplate = `{
                         "name": "data",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "enum": [
-                            "admin",
-                            "user"
-                        ],
-                        "type": "string",
-                        "description": "New role of the user",
-                        "name": "role",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User role updated",
+                        "description": "User is banned",
                         "schema": {
                             "type": "string"
                         }
@@ -138,6 +178,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/delete-courier/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a courier from the system. Only admins are allowed to use this function.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-panel \u003e courier"
+                ],
+                "summary": "Delete a courier",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id or email of the courier",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Courier is deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/forgot-password": {
             "post": {
                 "security": [
@@ -153,7 +253,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "password_recovery"
+                    "password-recovery"
                 ],
                 "summary": "Forgot passwrod",
                 "parameters": [
@@ -297,7 +397,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "password_recovery"
+                    "password-recovery"
                 ],
                 "summary": "Recover password (Use this one after sending verification code)",
                 "parameters": [
@@ -390,18 +490,87 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/unban/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Unbans a user which allows user to use. Only admins are allowed to use this function.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin-panel \u003e banning"
+                ],
+                "summary": "Unban a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id or email of the user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User is unbanned",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.AddCourierReq": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ConfirmRegistrationReq": {
             "type": "object",
             "properties": {
                 "code": {
-                    "description": "Confirmation code received via email",
                     "type": "string"
                 },
                 "email": {
-                    "description": "User's email address",
                     "type": "string"
                 }
             }

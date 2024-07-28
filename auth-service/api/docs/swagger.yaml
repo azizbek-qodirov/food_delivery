@@ -1,11 +1,16 @@
 definitions:
+  models.AddCourierReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   models.ConfirmRegistrationReq:
     properties:
       code:
-        description: Confirmation code received via email
         type: string
       email:
-        description: User's email address
         type: string
     type: object
   models.ForgotPasswordReq:
@@ -68,12 +73,45 @@ definitions:
 info:
   contact: {}
 paths:
-  /change-role/{id}:
+  /add-courier:
+    post:
+      consumes:
+      - application/json
+      description: Adds a courier to the system. Only admins are allowed to use this
+        function.
+      parameters:
+      - description: Courier data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddCourierReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Courier is added
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add a courier
+      tags:
+      - admin-panel > courier
+  /ban/{id}:
     put:
       consumes:
       - application/json
-      description: Changes the role of a user or admin. Only admins are allowed to
-        use this function.
+      description: Bans a user which doesn't allow user to use. Only admins are allowed
+        to use this function.
       parameters:
       - description: id or email of the user
         in: path
@@ -88,19 +126,11 @@ paths:
         name: data
         required: true
         type: string
-      - description: New role of the user
-        enum:
-        - admin
-        - user
-        in: query
-        name: role
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: User role updated
+          description: User is banned
           schema:
             type: string
         "400":
@@ -113,9 +143,9 @@ paths:
             type: string
       security:
       - BearerAuth: []
-      summary: Change a user's role
+      summary: Ban a user
       tags:
-      - admin-panel
+      - admin-panel > banning
   /confirm-registration:
     post:
       consumes:
@@ -150,6 +180,46 @@ paths:
       summary: Confirm registration with code
       tags:
       - registration
+  /delete-courier/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a courier from the system. Only admins are allowed to use
+        this function.
+      parameters:
+      - description: id or email of the courier
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Courier is deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a courier
+      tags:
+      - admin-panel > courier
   /forgot-password:
     post:
       consumes:
@@ -185,7 +255,7 @@ paths:
       - BearerAuth: []
       summary: Forgot passwrod
       tags:
-      - password_recovery
+      - password-recovery
   /login:
     post:
       consumes:
@@ -282,7 +352,7 @@ paths:
             type: string
       summary: Recover password (Use this one after sending verification code)
       tags:
-      - password_recovery
+      - password-recovery
   /register:
     post:
       consumes:
@@ -313,6 +383,46 @@ paths:
       summary: Register a new user
       tags:
       - registration
+  /unban/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Unbans a user which allows user to use. Only admins are allowed
+        to use this function.
+      parameters:
+      - description: id or email of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User is unbanned
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Unban a user
+      tags:
+      - admin-panel > banning
 securityDefinitions:
   BearerAuth:
     in: header

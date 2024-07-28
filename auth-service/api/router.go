@@ -28,7 +28,10 @@ func NewRouter(h *handlers.HTTPHandler) *gin.Engine {
 
 	protected := router.Group("/", middleware.JWTMiddleware())
 	protected.GET("/profile", h.Profile)
-	protected.PUT("/change-role/:id", middleware.IsAdminMiddleware(), h.ChangeUserRole)
+	protected.PUT("/ban/:id", middleware.IsAdminMiddleware(), h.BanUser)
+	protected.PUT("/unban/:id", middleware.IsAdminMiddleware(), h.UnbanUser)
+	protected.POST("/add-courier", middleware.IsAdminMiddleware(), h.AddCourier)
+	protected.DELETE("/delete-courier/:id", middleware.IsAdminMiddleware(), h.DeleteCourier)
 
 	router.GET("/user/:id", h.GetByID)
 

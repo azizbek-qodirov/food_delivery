@@ -39,10 +39,14 @@ type GetProfileByIdResp struct {
 	Role  string `json:"role"`
 }
 
-type ChangeRoleReq struct {
+type BanUserReq struct {
 	ID    string `json:"id"`    // Username of the profile to retrieve
 	Email string `json:"email"` // Username of the profile to retrieve
-	Role  string `json:"role"`  // User's password
+}
+
+type UnbanUserReq struct {
+	ID    string `json:"id"`    // Username of the profile to retrieve
+	Email string `json:"email"` // Username of the profile to retrieve
 }
 
 type ForgotPasswordReq struct {
@@ -70,6 +74,16 @@ type ConfirmUserReq struct {
 }
 
 type ConfirmRegistrationReq struct {
-	Email string `json:"email"` // User's email address
-	Code  string `json:"code"`  // Confirmation code received via email
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+type AddCourierReq struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type DeleteCourierReq struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
 }
