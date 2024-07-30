@@ -39,16 +39,6 @@ type GetProfileByIdResp struct {
 	Role  string `json:"role"`
 }
 
-type BanUserReq struct {
-	ID    string `json:"id"`    // Username of the profile to retrieve
-	Email string `json:"email"` // Username of the profile to retrieve
-}
-
-type UnbanUserReq struct {
-	ID    string `json:"id"`    // Username of the profile to retrieve
-	Email string `json:"email"` // Username of the profile to retrieve
-}
-
 type ForgotPasswordReq struct {
 	Email string `json:"email"` // User's email address
 }
@@ -78,12 +68,12 @@ type ConfirmRegistrationReq struct {
 	Code  string `json:"code"`
 }
 
-type AddCourierReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type MongoUser struct {
+	ID   string `bson:"user_id"`
+	Cart []Cart `bson:"cart"`
 }
 
-type DeleteCourierReq struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+type Cart struct {
+	ProductID string `bson:"product_id"`
+	Quantity  int    `bson:"quantity"`
 }

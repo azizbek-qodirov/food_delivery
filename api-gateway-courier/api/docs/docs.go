@@ -15,66 +15,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/confirm-registration": {
-            "post": {
-                "description": "Confirms a user's registration using the code sent to their email.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "registration"
-                ],
-                "summary": "Confirm registration with code",
-                "parameters": [
-                    {
-                        "description": "Confirmation request",
-                        "name": "confirmation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ConfirmRegistrationReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "JWT tokens",
-                        "schema": {
-                            "$ref": "#/definitions/token.Tokens"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Incorrect verification code",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Verification code expired or email not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/forgot-password": {
+        "/add-courier": {
             "post": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Sends a confirmation code to email recovery password",
+                "description": "Adds a courier to the system. Only admins are allowed to use this function.",
                 "consumes": [
                     "application/json"
                 ],
@@ -82,35 +30,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "password-recovery"
+                    "courier"
                 ],
-                "summary": "Forgot passwrod",
+                "summary": "Add a courier",
                 "parameters": [
                     {
-                        "description": "User login credentials",
-                        "name": "credentials",
+                        "description": "Courier data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ForgotPasswordReq"
+                            "$ref": "#/definitions/models.AddCourierReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Courier is added",
                         "schema": {
                             "type": "string"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Page not found",
+                    "400": {
+                        "description": "Invalid request payload",
                         "schema": {
                             "type": "string"
                         }
@@ -124,60 +66,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/login": {
+        "/add-product-manager": {
             "post": {
-                "description": "Authenticate user with email and password",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "login"
-                ],
-                "summary": "Login a user",
-                "parameters": [
-                    {
-                        "description": "User login credentials",
-                        "name": "credentials",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.LoginReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "JWT tokens",
-                        "schema": {
-                            "$ref": "#/definitions/token.Tokens"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid email or password",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/profile": {
-            "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get the profile of the authenticated user",
+                "description": "Adds a product-manager to the system. Only admins are allowed to use this function.",
                 "consumes": [
                     "application/json"
                 ],
@@ -185,24 +81,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "product-manager"
                 ],
-                "summary": "Get user profile",
+                "summary": "Add a product-manager",
+                "parameters": [
+                    {
+                        "description": "ProductManager data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddProductManagerReq"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.GetProfileResp"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
+                        "description": "ProductManager is added",
                         "schema": {
                             "type": "string"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "400": {
+                        "description": "Invalid request payload",
                         "schema": {
                             "type": "string"
                         }
@@ -216,9 +117,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/recover-password": {
-            "post": {
-                "description": "Verifies the code and updates the password",
+        "/ban/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Bans a user which doesn't allow user to use. Only admins are allowed to use this function.",
                 "consumes": [
                     "application/json"
                 ],
@@ -226,23 +132,32 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "password-recovery"
+                    "banning"
                 ],
-                "summary": "Recover password (Use this one after sending verification code)",
+                "summary": "Ban a user",
                 "parameters": [
                     {
-                        "description": "Recover Password Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RecoverPasswordReq"
-                        }
+                        "type": "string",
+                        "description": "id or email of the user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Password successfully updated",
+                        "description": "User is banned",
                         "schema": {
                             "type": "string"
                         }
@@ -253,20 +168,8 @@ const docTemplate = `{
                             "type": "string"
                         }
                     },
-                    "401": {
-                        "description": "Incorrect verification code",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Verification code expired or email not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     "500": {
-                        "description": "Error updating password",
+                        "description": "Server error",
                         "schema": {
                             "type": "string"
                         }
@@ -274,9 +177,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/register": {
-            "post": {
-                "description": "Register a new user with email, username, and password",
+        "/delete-courier/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a courier from the system. Only admins are allowed to use this function.",
                 "consumes": [
                     "application/json"
                 ],
@@ -284,25 +192,154 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "registration"
+                    "courier"
                 ],
-                "summary": "Register a new user",
+                "summary": "Delete a courier",
                 "parameters": [
                     {
-                        "description": "User registration request",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.RegisterReqSwag"
-                        }
+                        "type": "string",
+                        "description": "id or email of the courier",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "JWT tokens",
+                    "200": {
+                        "description": "Courier is deleted",
                         "schema": {
-                            "$ref": "#/definitions/token.Tokens"
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/delete-product-manager/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a product-manager from the system. Only admins are allowed to use this function.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-manager"
+                ],
+                "summary": "Delete a product-manager",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id or email of the product-manager",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ProductManager is deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/unban/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Unbans a user which allows user to use. Only admins are allowed to use this function.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "banning"
+                ],
+                "summary": "Unban a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id or email of the user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "email"
+                        ],
+                        "type": "string",
+                        "description": "Search with",
+                        "name": "data",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User is unbanned",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -322,97 +359,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ConfirmRegistrationReq": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ForgotPasswordReq": {
+        "models.AddCourierReq": {
             "type": "object",
             "properties": {
                 "email": {
-                    "description": "User's email address",
-                    "type": "string"
-                }
-            }
-        },
-        "models.GetProfileResp": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "description": "User's email address",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "User's unique identifier",
-                    "type": "string"
-                },
-                "is_confirmed": {
-                    "description": "Add IsConfirmed to the model",
-                    "type": "boolean"
-                },
-                "password": {
-                    "description": "User's password",
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.LoginReq": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "description": "User's email",
                     "type": "string"
                 },
                 "password": {
-                    "description": "User's password",
                     "type": "string"
                 }
             }
         },
-        "models.RecoverPasswordReq": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.RegisterReqSwag": {
+        "models.AddProductManagerReq": {
             "type": "object",
             "properties": {
                 "email": {
-                    "description": "User's email address",
                     "type": "string"
                 },
                 "password": {
-                    "description": "User's password",
-                    "type": "string"
-                }
-            }
-        },
-        "token.Tokens": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
                     "type": "string"
                 }
             }
@@ -429,11 +393,11 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/swagger/index.html#/",
 	Schemes:          []string{},
-	Title:            "",
+	Title:            "Swaggers of admin panel",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

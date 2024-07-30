@@ -21,11 +21,7 @@ func NewUserService(PsqlConn *sql.DB, MongoConn *mongo.Client) *UserService {
 func (u *UserService) Register(req *models.RegisterReq) error {
 	req.ID = uuid.NewString()
 	req.Role = "user"
-	err := u.UM.RegisterInMongo()
-	if err != nil {
-		return err
-	}
-	if err := u.UM.Register(*req); err != nil {
+	if err := u.UM.Register(*req, &models.MongoUser{ID: req.ID, Cart: []models.Cart{}}); err != nil {
 		return err
 	}
 	return nil
@@ -41,20 +37,4 @@ func (u *UserService) IsEmailExists(email string) error {
 
 func (u *UserService) GetByID(id *models.GetProfileByIdReq) (*models.GetProfileByIdResp, error) {
 	return u.UM.GetByID(id)
-}
-
-func (u *UserService) BanUser(req *models.BanUserReq) error {
-	return u.UM.BanUser(*req)
-}
-
-func (u *UserService) UnbanUser(req *models.UnbanUserReq) error {
-	return u.UM.UnbanUser(*req)
-}
-
-func (u *UserService) AddCourier(req *models.AddCourierReq) error {
-	return u.UM.AddCourier(req)
-}
-
-func (u *UserService) DeleteCourier(req *models.DeleteCourierReq) error {
-	return u.UM.DeleteCourier(*req)
 }

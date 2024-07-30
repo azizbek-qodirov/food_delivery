@@ -1,0 +1,109 @@
+basePath: /api/swagger/index.html#/
+definitions:
+  genprotos.ProductCReq:
+    properties:
+      additional_details:
+        additionalProperties:
+          type: string
+        type: object
+      category:
+        type: string
+      count:
+        type: number
+      description:
+        type: string
+      name:
+        type: string
+      rating:
+        type: number
+      seller:
+        type: string
+      size:
+        type: number
+      weight:
+        type: number
+    type: object
+info:
+  contact: {}
+  title: Swaggers of admin panel
+  version: "1.0"
+paths:
+  /add-product:
+    post:
+      consumes:
+      - application/json
+      description: Adds a product to the system. Only admins are allowed to use this
+        function.
+      parameters:
+      - description: Product data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ProductCReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product is added
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add a product
+      tags:
+      - product
+  /delete-product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a product from the system. Only admins are allowed to use
+        this function.
+      parameters:
+      - description: id or email of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product is deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - product
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

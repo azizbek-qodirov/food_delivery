@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"auth-service/api/token"
+	"gateway-admin/api/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 func JWTMiddleware() gin.HandlerFunc {
@@ -29,6 +30,23 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("claims", claims)
+		c.Next()
+	}
+}
+
+func IsAdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		claims, exists := c.Get("claims")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+		role := claims.(jwt.MapClaims)["role"].(string)
+		if role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			c.Abort()
+		}
 		c.Next()
 	}
 }

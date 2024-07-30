@@ -1,0 +1,253 @@
+basePath: /api/swagger/index.html#/
+definitions:
+  models.AddCourierReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.AddProductManagerReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Swaggers of admin panel
+  version: "1.0"
+paths:
+  /add-courier:
+    post:
+      consumes:
+      - application/json
+      description: Adds a courier to the system. Only admins are allowed to use this
+        function.
+      parameters:
+      - description: Courier data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddCourierReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Courier is added
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add a courier
+      tags:
+      - courier
+  /add-product-manager:
+    post:
+      consumes:
+      - application/json
+      description: Adds a product-manager to the system. Only admins are allowed to
+        use this function.
+      parameters:
+      - description: ProductManager data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddProductManagerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ProductManager is added
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add a product-manager
+      tags:
+      - product-manager
+  /ban/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Bans a user which doesn't allow user to use. Only admins are allowed
+        to use this function.
+      parameters:
+      - description: id or email of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User is banned
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Ban a user
+      tags:
+      - banning
+  /delete-courier/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a courier from the system. Only admins are allowed to use
+        this function.
+      parameters:
+      - description: id or email of the courier
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Courier is deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a courier
+      tags:
+      - courier
+  /delete-product-manager/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a product-manager from the system. Only admins are allowed
+        to use this function.
+      parameters:
+      - description: id or email of the product-manager
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ProductManager is deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a product-manager
+      tags:
+      - product-manager
+  /unban/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Unbans a user which allows user to use. Only admins are allowed
+        to use this function.
+      parameters:
+      - description: id or email of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User is unbanned
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Unban a user
+      tags:
+      - banning
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

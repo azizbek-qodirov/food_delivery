@@ -7,29 +7,26 @@ import (
 
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "auth-service/api/docs"
-	"auth-service/api/handlers"
-	"auth-service/api/middleware"
+	_ "gateway-admin/api/docs"
+	"gateway-admin/api/handlers"
+	"gateway-admin/api/middleware"
 )
 
+// @title Swaggers of admin panel
+// @version 1.0
+// @BasePath /api/swagger/index.html#/
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 func NewRouter(h *handlers.HTTPHandler) *gin.Engine {
 	router := gin.Default()
-
 	router.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router.POST("/register", h.Register)
-	router.POST("/confirm-registration", h.ConfirmRegistration)
-	router.POST("/login", h.Login)
-	router.POST("/forgot-password", h.ForgotPassword)
-	router.POST("/recover-password", h.RecoverPassword)
-
 	protected := router.Group("/", middleware.JWTMiddleware())
-	protected.GET("/profile", h.Profile)
+	protected.Use(middleware.IsAdminMiddleware())
 
-	router.GET("/user/:id", h.GetByID)
+	protected.POST("/add-product", h.AddProduct)
+	protected.DELETE("/delete-product/:id", h.DeleteProduct)
 
 	return router
 }
