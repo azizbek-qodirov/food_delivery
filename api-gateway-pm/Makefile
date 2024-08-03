@@ -1,5 +1,5 @@
 run:
-	go run main.go
+	clear && go run main.go
 migrate_up:
 	migrate -path migrations -database postgres://mrbek:QodirovCoder@localhost:5432/delivery_auth -verbose up
 

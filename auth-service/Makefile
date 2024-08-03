@@ -1,5 +1,8 @@
 run:
-	go run main.go
+	@if [ ! -f ./go.mod ]; then \
+		go mod init auth-service; \
+	fi && go mod tidy && clear && go run main.go
+
 migrate_up:
 	migrate -path migrations -database postgres://mrbek:QodirovCoder@localhost:5432/delivery_auth -verbose up
 

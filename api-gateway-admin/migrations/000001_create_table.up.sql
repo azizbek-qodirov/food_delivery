@@ -1,11 +1,4 @@
--- Create the enum type for roles
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
-        CREATE TYPE user_role AS ENUM ('admin', 'user', 'courier', 'manager', 'banned');
-    END IF;
-END
-$$;
+
 
 -- Up migration
 CREATE TABLE users (
