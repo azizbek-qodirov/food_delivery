@@ -31,5 +31,7 @@ func NewRouter(h *handlers.HTTPHandler) *gin.Engine {
 
 	router.GET("/user/:id", h.GetByID)
 
+	router.GET("")
+
 	return router
 }

@@ -12,9 +12,8 @@ import (
 	"gateway-admin/api/middleware"
 )
 
-// @title Swaggers of admin panel
+// @title Swaggers of Product manager
 // @version 1.0
-// @BasePath /api/swagger/index.html#/
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
@@ -23,10 +22,9 @@ func NewRouter(h *handlers.HTTPHandler) *gin.Engine {
 	router.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	protected := router.Group("/", middleware.JWTMiddleware())
-	protected.Use(middleware.IsAdminMiddleware())
+	protected.Use(middleware.IsProductManagerMiddleware())
 
 	protected.POST("/add-product", h.AddProduct)
-	protected.DELETE("/delete-product/:id", h.DeleteProduct)
 
 	return router
 }

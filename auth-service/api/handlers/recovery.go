@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -123,20 +122,8 @@ func (h *HTTPHandler) RecoverPassword(c *gin.Context) {
 		return
 	}
 
-	if len(req.NewPassword) < 8 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Password must be at least 8 characters long"})
-		return
-	}
-	if !regexp.MustCompile(`[0-9]`).MatchString(req.NewPassword) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Password must contain at least one number"})
-		return
-	}
-	if !regexp.MustCompile(`[A-Z]`).MatchString(req.NewPassword) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Password must contain at least one uppercase letter"})
-		return
-	}
-	if !regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`).MatchString(req.NewPassword) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Password must contain at least one special character"})
+	if err := config.IsValidPassword(req.NewPassword); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 

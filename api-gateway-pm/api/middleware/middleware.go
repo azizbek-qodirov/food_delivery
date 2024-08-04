@@ -34,7 +34,7 @@ func JWTMiddleware() gin.HandlerFunc {
 	}
 }
 
-func IsAdminMiddleware() gin.HandlerFunc {
+func IsProductManagerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, exists := c.Get("claims")
 		if !exists {
@@ -43,7 +43,7 @@ func IsAdminMiddleware() gin.HandlerFunc {
 			return
 		}
 		role := claims.(jwt.MapClaims)["role"].(string)
-		if role != "admin" {
+		if role != "manager" {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 			c.Abort()
 		}

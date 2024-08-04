@@ -21,7 +21,7 @@ func ConnectDB(cf *config.Config) (*sql.DB, *mongo.Client, error) {
 	if err != nil {
 		panic("Postgres not connected due to error: " + err.Error())
 	}
-
+	
 	clientOptions := options.Client().ApplyURI(cf.MONGO_URI)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {

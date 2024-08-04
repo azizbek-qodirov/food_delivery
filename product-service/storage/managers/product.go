@@ -31,9 +31,8 @@ func (m *ProductManager) Create(req *pb.ProductCReq) (*pb.Void, error) {
 		"count":             req.Count,
 		"description":       req.Description,
 		"img_url":           req.ImgUrl,
-		"size":              req.Size,
 		"weight":            req.Weight,
-		"rating":            req.Rating,
+		"rating":            0,
 		"seller":            req.Seller,
 		"additionalDetails": req.AdditionalDetails,
 	}
@@ -53,12 +52,8 @@ func (m *ProductManager) Update(req *pb.ProductUReq) (*pb.Void, error) {
 		"$set": bson.M{
 			"name":               req.Name,
 			"category":           req.Category,
-			"count":              req.Count,
 			"description":        req.Description,
-			"img_url":            req.ImgUrl,
-			"size":               req.Size,
 			"weight":             req.Weight,
-			"rating":             req.Rating,
 			"seller":             req.Seller,
 			"additional_details": req.AdditionalDetails,
 		},
@@ -158,6 +153,21 @@ func (m *ProductManager) UpdateCount(req *pb.ProductCountUReq) (*pb.Void, error)
 	}
 	update := bson.M{
 		"$set": bson.M{"count": req.Count},
+	}
+	_, err = m.Collection.UpdateOne(context.Background(), bson.M{"_id": id}, update)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Void{}, nil
+}
+
+func (m *ProductManager) UpdateImg(req *pb.ProductImageUReq) (*pb.Void, error) {
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	update := bson.M{
+		"$set": bson.M{"img_url": req.ImgUrl},
 	}
 	_, err = m.Collection.UpdateOne(context.Background(), bson.M{"_id": id}, update)
 	if err != nil {

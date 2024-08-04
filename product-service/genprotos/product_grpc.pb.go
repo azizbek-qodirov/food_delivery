@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
+	ProductService_UpdateImg_FullMethodName    = "/delivery.ProductService/UpdateImg"
 	ProductService_UpdateRating_FullMethodName = "/delivery.ProductService/UpdateRating"
 	ProductService_UpdateCount_FullMethodName  = "/delivery.ProductService/UpdateCount"
 	ProductService_Create_FullMethodName       = "/delivery.ProductService/Create"
@@ -32,6 +33,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
+	UpdateImg(ctx context.Context, in *ProductImageUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateRating(ctx context.Context, in *ProductRatingUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateCount(ctx context.Context, in *ProductCountUReq, opts ...grpc.CallOption) (*Void, error)
 	Create(ctx context.Context, in *ProductCReq, opts ...grpc.CallOption) (*Void, error)
@@ -47,6 +49,16 @@ type productServiceClient struct {
 
 func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 	return &productServiceClient{cc}
+}
+
+func (c *productServiceClient) UpdateImg(ctx context.Context, in *ProductImageUReq, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, ProductService_UpdateImg_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *productServiceClient) UpdateRating(ctx context.Context, in *ProductRatingUReq, opts ...grpc.CallOption) (*Void, error) {
@@ -123,6 +135,7 @@ func (c *productServiceClient) GetAll(ctx context.Context, in *ProductGAReq, opt
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
+	UpdateImg(context.Context, *ProductImageUReq) (*Void, error)
 	UpdateRating(context.Context, *ProductRatingUReq) (*Void, error)
 	UpdateCount(context.Context, *ProductCountUReq) (*Void, error)
 	Create(context.Context, *ProductCReq) (*Void, error)
@@ -137,6 +150,9 @@ type ProductServiceServer interface {
 type UnimplementedProductServiceServer struct {
 }
 
+func (UnimplementedProductServiceServer) UpdateImg(context.Context, *ProductImageUReq) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateImg not implemented")
+}
 func (UnimplementedProductServiceServer) UpdateRating(context.Context, *ProductRatingUReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRating not implemented")
 }
@@ -169,6 +185,24 @@ type UnsafeProductServiceServer interface {
 
 func RegisterProductServiceServer(s grpc.ServiceRegistrar, srv ProductServiceServer) {
 	s.RegisterService(&ProductService_ServiceDesc, srv)
+}
+
+func _ProductService_UpdateImg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductImageUReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).UpdateImg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_UpdateImg_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).UpdateImg(ctx, req.(*ProductImageUReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ProductService_UpdateRating_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -304,6 +338,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "delivery.ProductService",
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpdateImg",
+			Handler:    _ProductService_UpdateImg_Handler,
+		},
 		{
 			MethodName: "UpdateRating",
 			Handler:    _ProductService_UpdateRating_Handler,

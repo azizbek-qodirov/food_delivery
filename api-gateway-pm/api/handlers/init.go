@@ -7,11 +7,11 @@ import (
 )
 
 type HTTPHandler struct {
-	ProductManager pb.ProductManagerServiceClient
+	ProductManager pb.ProductServiceClient
 }
 
 func NewHandler(connP *grpc.ClientConn) *HTTPHandler {
 	return &HTTPHandler{
-		ProductManager: pb.NewProductManagerServiceClient(connP),
+		ProductManager: pb.NewProductServiceClient(connP),
 	}
 }

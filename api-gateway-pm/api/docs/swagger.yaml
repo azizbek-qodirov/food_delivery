@@ -1,6 +1,5 @@
-basePath: /api/swagger/index.html#/
 definitions:
-  genprotos.ProductCReq:
+  genprotos.ProductCReqForSwagger:
     properties:
       additional_details:
         additionalProperties:
@@ -14,24 +13,92 @@ definitions:
         type: string
       name:
         type: string
+      seller:
+        type: string
+      weight:
+        type: number
+    type: object
+  genprotos.ProductCountUReq:
+    properties:
+      count:
+        type: number
+      product_id:
+        type: string
+    type: object
+  genprotos.ProductGARes:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/genprotos.ProductGRes'
+        type: array
+    type: object
+  genprotos.ProductGRes:
+    properties:
+      additional_details:
+        additionalProperties:
+          type: string
+        type: object
+      category:
+        type: string
+      count:
+        type: number
+      description:
+        type: string
+      id:
+        type: string
+      img_url:
+        type: string
+      name:
+        type: string
       rating:
         type: number
       seller:
         type: string
-      size:
+      weight:
         type: number
+    type: object
+  genprotos.ProductImageUReq:
+    properties:
+      id:
+        type: string
+      img_url:
+        type: string
+    type: object
+  genprotos.ProductRatingUReq:
+    properties:
+      product_id:
+        type: string
+      rate:
+        type: number
+    type: object
+  genprotos.ProductUReq:
+    properties:
+      additional_details:
+        additionalProperties:
+          type: string
+        type: object
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      seller:
+        type: string
       weight:
         type: number
     type: object
 info:
   contact: {}
-  title: Swaggers of admin panel
+  title: Swaggers of Product manager
   version: "1.0"
 paths:
   /add-product:
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Adds a product to the system. Only admins are allowed to use this
         function.
       parameters:
@@ -40,7 +107,12 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/genprotos.ProductCReq'
+          $ref: '#/definitions/genprotos.ProductCReqForSwagger'
+      - description: Product image
+        in: formData
+        name: image
+        required: true
+        type: file
       produces:
       - application/json
       responses:
@@ -99,6 +171,219 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete a product
+      tags:
+      - product
+  /get-product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets a product from the system.
+      parameters:
+      - description: id or email of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product data
+          schema:
+            $ref: '#/definitions/genprotos.ProductGRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get a product
+      tags:
+      - product
+  /get-products:
+    get:
+      consumes:
+      - application/json
+      description: Gets all products from the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product data
+          schema:
+            items:
+              $ref: '#/definitions/genprotos.ProductGARes'
+            type: array
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get all products
+      tags:
+      - product
+  /update-product-count/{product_id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the count of a product.
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: Count data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ProductCountUReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product count updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update product count
+      tags:
+      - product
+  /update-product-image/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the image URL of a product.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Image URL data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ProductImageUReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product image URL updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update product image URL
+      tags:
+      - product
+  /update-product-rating/{product_id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the rating of a product.
+      parameters:
+      - description: Product ID
+        in: path
+        name: product_id
+        required: true
+        type: string
+      - description: Rating data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ProductRatingUReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product rating updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update product rating
+      tags:
+      - product
+  /update-product/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a product in the system. Only admins are allowed to use
+        this function.
+      parameters:
+      - description: id or email of the product
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Search with
+        enum:
+        - id
+        - email
+        in: query
+        name: data
+        required: true
+        type: string
+      - description: Product data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/genprotos.ProductUReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product is updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a product
       tags:
       - product
 securityDefinitions:

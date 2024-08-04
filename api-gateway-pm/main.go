@@ -14,7 +14,7 @@ func main() {
 	cf := config.Load()
 	em := config.NewErrorManager()
 
-	ProductConn, err := grpc.NewClient(fmt.Sprintf("learning_service%s", cf.PRODUCT_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	ProductConn, err := grpc.NewClient(fmt.Sprintf("localhost%s", cf.PRODUCT_SERVICE_PORT), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	em.CheckErr(err)
 	defer ProductConn.Close()
 

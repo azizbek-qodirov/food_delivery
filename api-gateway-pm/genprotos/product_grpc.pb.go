@@ -19,16 +19,28 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
+	ProductService_UpdateImg_FullMethodName    = "/delivery.ProductService/UpdateImg"
 	ProductService_UpdateRating_FullMethodName = "/delivery.ProductService/UpdateRating"
 	ProductService_UpdateCount_FullMethodName  = "/delivery.ProductService/UpdateCount"
+	ProductService_Create_FullMethodName       = "/delivery.ProductService/Create"
+	ProductService_Update_FullMethodName       = "/delivery.ProductService/Update"
+	ProductService_Delete_FullMethodName       = "/delivery.ProductService/Delete"
+	ProductService_Get_FullMethodName          = "/delivery.ProductService/Get"
+	ProductService_GetAll_FullMethodName       = "/delivery.ProductService/GetAll"
 )
 
 // ProductServiceClient is the client API for ProductService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductServiceClient interface {
+	UpdateImg(ctx context.Context, in *ProductImageUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateRating(ctx context.Context, in *ProductRatingUReq, opts ...grpc.CallOption) (*Void, error)
 	UpdateCount(ctx context.Context, in *ProductCountUReq, opts ...grpc.CallOption) (*Void, error)
+	Create(ctx context.Context, in *ProductCReq, opts ...grpc.CallOption) (*Void, error)
+	Update(ctx context.Context, in *ProductUReq, opts ...grpc.CallOption) (*Void, error)
+	Delete(ctx context.Context, in *ByID, opts ...grpc.CallOption) (*Void, error)
+	Get(ctx context.Context, in *ByID, opts ...grpc.CallOption) (*ProductGRes, error)
+	GetAll(ctx context.Context, in *ProductGAReq, opts ...grpc.CallOption) (*ProductGARes, error)
 }
 
 type productServiceClient struct {
@@ -37,6 +49,16 @@ type productServiceClient struct {
 
 func NewProductServiceClient(cc grpc.ClientConnInterface) ProductServiceClient {
 	return &productServiceClient{cc}
+}
+
+func (c *productServiceClient) UpdateImg(ctx context.Context, in *ProductImageUReq, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, ProductService_UpdateImg_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *productServiceClient) UpdateRating(ctx context.Context, in *ProductRatingUReq, opts ...grpc.CallOption) (*Void, error) {
@@ -59,12 +81,68 @@ func (c *productServiceClient) UpdateCount(ctx context.Context, in *ProductCount
 	return out, nil
 }
 
+func (c *productServiceClient) Create(ctx context.Context, in *ProductCReq, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, ProductService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) Update(ctx context.Context, in *ProductUReq, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, ProductService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) Delete(ctx context.Context, in *ByID, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, ProductService_Delete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) Get(ctx context.Context, in *ByID, opts ...grpc.CallOption) (*ProductGRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProductGRes)
+	err := c.cc.Invoke(ctx, ProductService_Get_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetAll(ctx context.Context, in *ProductGAReq, opts ...grpc.CallOption) (*ProductGARes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProductGARes)
+	err := c.cc.Invoke(ctx, ProductService_GetAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility
 type ProductServiceServer interface {
+	UpdateImg(context.Context, *ProductImageUReq) (*Void, error)
 	UpdateRating(context.Context, *ProductRatingUReq) (*Void, error)
 	UpdateCount(context.Context, *ProductCountUReq) (*Void, error)
+	Create(context.Context, *ProductCReq) (*Void, error)
+	Update(context.Context, *ProductUReq) (*Void, error)
+	Delete(context.Context, *ByID) (*Void, error)
+	Get(context.Context, *ByID) (*ProductGRes, error)
+	GetAll(context.Context, *ProductGAReq) (*ProductGARes, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -72,11 +150,29 @@ type ProductServiceServer interface {
 type UnimplementedProductServiceServer struct {
 }
 
+func (UnimplementedProductServiceServer) UpdateImg(context.Context, *ProductImageUReq) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateImg not implemented")
+}
 func (UnimplementedProductServiceServer) UpdateRating(context.Context, *ProductRatingUReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRating not implemented")
 }
 func (UnimplementedProductServiceServer) UpdateCount(context.Context, *ProductCountUReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCount not implemented")
+}
+func (UnimplementedProductServiceServer) Create(context.Context, *ProductCReq) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedProductServiceServer) Update(context.Context, *ProductUReq) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedProductServiceServer) Delete(context.Context, *ByID) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedProductServiceServer) Get(context.Context, *ByID) (*ProductGRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedProductServiceServer) GetAll(context.Context, *ProductGAReq) (*ProductGARes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 
@@ -89,6 +185,24 @@ type UnsafeProductServiceServer interface {
 
 func RegisterProductServiceServer(s grpc.ServiceRegistrar, srv ProductServiceServer) {
 	s.RegisterService(&ProductService_ServiceDesc, srv)
+}
+
+func _ProductService_UpdateImg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductImageUReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).UpdateImg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_UpdateImg_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).UpdateImg(ctx, req.(*ProductImageUReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ProductService_UpdateRating_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -127,6 +241,96 @@ func _ProductService_UpdateCount_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductCReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).Create(ctx, req.(*ProductCReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductUReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).Update(ctx, req.(*ProductUReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ByID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_Delete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).Delete(ctx, req.(*ByID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ByID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_Get_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).Get(ctx, req.(*ByID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProductGAReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_GetAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetAll(ctx, req.(*ProductGAReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -135,12 +339,36 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ProductServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "UpdateImg",
+			Handler:    _ProductService_UpdateImg_Handler,
+		},
+		{
 			MethodName: "UpdateRating",
 			Handler:    _ProductService_UpdateRating_Handler,
 		},
 		{
 			MethodName: "UpdateCount",
 			Handler:    _ProductService_UpdateCount_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _ProductService_Create_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _ProductService_Update_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _ProductService_Delete_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _ProductService_Get_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _ProductService_GetAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
