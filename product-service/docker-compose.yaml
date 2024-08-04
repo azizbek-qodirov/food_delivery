@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  progress-service:
+    container_name: progress_service 
+    build: ./
+    ports:
+      - "50052:50052"
+    networks:
+      - global-network
+    depends_on:
+      - postgres-db
+      - mongo-db
+
+  migrate:
+    image: migrate/migrate
+    networks:
+      - global-network
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path", "/migrations", "-database",  
+                "postgres://postgres:root@lingua_progress_cont:5432/lingua_progress?sslmode=disable", 
+                "up" ]
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    container_name: lingua_progress_cont
+    image: postgres:latest
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: root
+      # PGDATA: /data/postgres
+      POSTGRES_DB: lingua_progress
+    volumes:
+      - db:/post-database/post-memory
+    ports:
+      - "5435:5432"
+    networks:
+      - global-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+
+networks:
+  global-network:
+    external: true
+    name: global-network
+    driver: bridge
+
+volumes:
+  db:

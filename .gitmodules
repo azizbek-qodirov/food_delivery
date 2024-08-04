@@ -1,3 +1,6 @@
 [submodule "api-gateway-pm/food-delivery-protos"]
 	path = api-gateway-pm/food-delivery-protos
 	url = git@github.com:Azizbek-Qodirov/food-delivery-protos.git
+[submodule "product-service/food-delivery-protos"]
+	path = product-service/food-delivery-protos
+	url = git@github.com:Azizbek-Qodirov/food-delivery-protos.git
