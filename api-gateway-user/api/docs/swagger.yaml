@@ -98,7 +98,7 @@ paths:
   /add-product:
     post:
       consumes:
-      - multipart/mixed
+      - multipart/form-data
       description: Adds a product to the system. Only admins are allowed to use this
         function.
       parameters:
@@ -110,7 +110,8 @@ paths:
           $ref: '#/definitions/genprotos.ProductCReqForSwagger'
       - description: Product image
         in: formData
-        name: image
+        name: file
+        required: true
         type: file
       produces:
       - application/json

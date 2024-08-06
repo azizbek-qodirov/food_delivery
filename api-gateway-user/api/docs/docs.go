@@ -24,7 +24,7 @@ const docTemplate = `{
                 ],
                 "description": "Adds a product to the system. Only admins are allowed to use this function.",
                 "consumes": [
-                    "multipart/mixed"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -46,8 +46,9 @@ const docTemplate = `{
                     {
                         "type": "file",
                         "description": "Product image",
-                        "name": "image",
-                        "in": "formData"
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {

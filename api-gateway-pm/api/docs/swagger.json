@@ -15,7 +15,7 @@
                 ],
                 "description": "Adds a product to the system. Only admins are allowed to use this function.",
                 "consumes": [
-                    "multipart/form-data"
+                    "multipart/mixed"
                 ],
                 "produces": [
                     "application/json"
@@ -38,8 +38,7 @@
                         "type": "file",
                         "description": "Product image",
                         "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

@@ -16,10 +16,10 @@ import (
 // @Summary Add a product
 // @Description Adds a product to the system. Only admins are allowed to use this function.
 // @Tags product
-// @Accept multipart/mixed
+// @Accept multipart/form-data
 // @Produce json
 // @Param data body pb.ProductCReqForSwagger true "Product data"
-// @Param image formData file false "Product image"
+// @Param image formData file true "Product image"
 // @Success 200 {object} string "Product is added"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
@@ -27,28 +27,25 @@ import (
 // @Router /add-product [post]
 func (h *HTTPHandler) AddProduct(c *gin.Context) {
 	req := pb.ProductCReqForSwagger{}
-	// if err := json.NewDecoder(c.Request.Body).Decode(&req); err != nil {
-	// 	panic(err)
-	// }
-	b, _ := io.ReadAll(c.Request.Body)
-	os.WriteFile("output.txt", b, 0644)
+	err := c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request payload", "details": err.Error()})
+		return
+	}
 	fmt.Println(&req)
-	// body := c.PostForm("data")
-
-	// fmt.Println(body)
 
 	image, header, err := c.Request.FormFile("image")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "image file is required: "+err.Error())
+		c.JSON(http.StatusBadRequest, "image file is required")
 		return
 	}
 	defer image.Close()
 
 	filename := header.Filename
-	filepath := filename
+	filepath := fmt.Sprintf("./media/products/%s", filename)
 	outfile, err := os.Create(filepath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "failed to create file"+err.Error())
+		c.JSON(http.StatusInternalServerError, "failed to create file")
 		return
 	}
 	defer outfile.Close()
@@ -59,14 +56,15 @@ func (h *HTTPHandler) AddProduct(c *gin.Context) {
 		return
 	}
 
-	// b, err = io.ReadAll(c.Request.Body)
+	// req.ImgUrl = filepath
+
+	// _, err = h.ProductManager.Create(context.Background(), &req)
 	// if err != nil {
-	// 	panic(err)
+	// 	c.JSON(http.StatusInternalServerError, "failed to create product")
+	// 	return
 	// }
 
-	// fmt.Println(string(b))
-
-	c.JSON(http.StatusOK, "product is added")
+	// c.JSON(http.StatusOK, "product is added")
 }
 
 // UpdateProduct godoc
