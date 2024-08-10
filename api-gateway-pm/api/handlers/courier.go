@@ -74,6 +74,7 @@ func (h *HTTPHandler) AddProductImage(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"message": "success", "url": minioURL})
+	
 }
 
 // AddProduct godoc
