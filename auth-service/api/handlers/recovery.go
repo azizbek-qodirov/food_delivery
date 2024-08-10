@@ -53,6 +53,7 @@ func generateConfirmationCode() (int, error) {
 	return int(n.Int64()), nil
 }
 
+
 // ForgotPassword godoc
 // @Summary Forgot passwrod
 // @Description Sends a confirmation code to email recovery password
