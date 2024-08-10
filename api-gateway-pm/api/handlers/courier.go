@@ -4,39 +4,29 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
 	pb "gateway-admin/genprotos"
 
 	"github.com/gin-gonic/gin"
+	"github.com/minio/minio-go/v7"
 )
 
 // AddProduct godoc
 // @Summary Add a product
-// @Description Adds a product to the system. Only admins are allowed to use this function.
+// @Description Adds a product image to the system. Only admins are allowed to use this function.
 // @Tags product
 // @Accept multipart/mixed
 // @Produce json
-// @Param data body pb.ProductCReqForSwagger true "Product data"
 // @Param image formData file false "Product image"
-// @Success 200 {object} string "Product is added"
+// @Success 200 {object} string "Product image is added"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
 // @Security BearerAuth
-// @Router /add-product [post]
-func (h *HTTPHandler) AddProduct(c *gin.Context) {
-	req := pb.ProductCReqForSwagger{}
-	// if err := json.NewDecoder(c.Request.Body).Decode(&req); err != nil {
-	// 	panic(err)
-	// }
-	b, _ := io.ReadAll(c.Request.Body)
-	os.WriteFile("output.txt", b, 0644)
-	fmt.Println(&req)
-	// body := c.PostForm("data")
-
-	// fmt.Println(body)
-
+// @Router /add-product [POST]
+func (h *HTTPHandler) AddProductImage(c *gin.Context) {
 	image, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "image file is required: "+err.Error())
@@ -59,12 +49,57 @@ func (h *HTTPHandler) AddProduct(c *gin.Context) {
 		return
 	}
 
-	// b, err = io.ReadAll(c.Request.Body)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	objectName := filepath
+	_, err = h.MinIO.FPutObject(context.Background(), "another-bucket", objectName, filepath, minio.PutObjectOptions{ContentType: "image/png"})
 
-	// fmt.Println(string(b))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Message": err.Error(),
+		})
+		log.Println(err)
+		return
+	}
+
+	minioURL := fmt.Sprintf("http://localhost:9000/another-bucket/%s", objectName)
+
+	c.JSON(http.StatusCreated, gin.H{
+		"url": minioURL,
+	})
+
+	if err := c.SaveUploadedFile(header, filepath); err != nil {
+		c.JSON(500, gin.H{
+			"error": "Couln't find matching file format",
+		})
+		log.Println(err)
+		return
+	}
+	c.JSON(200, gin.H{"message": "success"})
+}
+
+// AddProduct godoc
+// @Summary Add a product
+// @Description Adds a product to the system. Only admins are allowed to use this function.
+// @Tags product
+// @Accept multipart/mixed
+// @Produce json
+// @Param data body pb.ProductCReqForSwagger true "Product data"
+// @Success 200 {object} string "Product is added"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Server error"
+// @Security BearerAuth
+// @Router /add-product [POST]
+func (h *HTTPHandler) AddProduct(c *gin.Context) {
+	req := pb.ProductCReq{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request payload")
+		return
+	}
+
+	_, err := h.ProductManager.Create(context.Background(), &req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "failed to add product")
+		return
+	}
 
 	c.JSON(http.StatusOK, "product is added")
 }
@@ -82,7 +117,7 @@ func (h *HTTPHandler) AddProduct(c *gin.Context) {
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
 // @Security BearerAuth
-// @Router /update-product/{id} [put]
+// @Router /update-product/{id} [PUT]
 func (h *HTTPHandler) UpdateProduct(c *gin.Context) {
 	var (
 		req pb.ProductUReq
@@ -116,7 +151,7 @@ func (h *HTTPHandler) UpdateProduct(c *gin.Context) {
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
 // @Security BearerAuth
-// @Router /delete-product/{id} [delete]
+// @Router /delete-product/{id} [DELETE]
 func (h *HTTPHandler) DeleteProduct(c *gin.Context) {
 	res, err := h.ProductManager.Delete(context.Background(), &pb.ByID{
 		Id: c.Param("id"),
@@ -140,7 +175,7 @@ func (h *HTTPHandler) DeleteProduct(c *gin.Context) {
 // @Success 200 {object} pb.ProductGRes "Product data"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
-// @Router /get-product/{id} [get]
+// @Router /get-product/{id} [GET]
 func (h *HTTPHandler) GetProduct(c *gin.Context) {
 	res, err := h.ProductManager.Get(context.Background(), &pb.ByID{
 		Id: c.Param("id"),
@@ -162,7 +197,7 @@ func (h *HTTPHandler) GetProduct(c *gin.Context) {
 // @Success 200 {array} pb.ProductGARes "Product data"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
-// @Router /get-products [get]
+// @Router /get-products [GET]
 func (h *HTTPHandler) GetAllProducts(c *gin.Context) {
 	res, err := h.ProductManager.GetAll(context.Background(), &pb.ProductGAReq{})
 	if err != nil {
@@ -184,7 +219,7 @@ func (h *HTTPHandler) GetAllProducts(c *gin.Context) {
 // @Success 200 {object} string "Product rating updated"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
-// @Router /update-product-rating/{product_id} [put]
+// @Router /update-product-rating/{product_id} [PUT]
 func (h *HTTPHandler) UpdateProductRating(c *gin.Context) {
 	var req pb.ProductRatingUReq
 	req.ProductId = c.Param("product_id")
@@ -214,7 +249,7 @@ func (h *HTTPHandler) UpdateProductRating(c *gin.Context) {
 // @Success 200 {object} string "Product count updated"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
-// @Router /update-product-count/{product_id} [put]
+// @Router /update-product-count/{product_id} [PUT]
 func (h *HTTPHandler) UpdateProductCount(c *gin.Context) {
 	var req pb.ProductCountUReq
 	req.ProductId = c.Param("product_id")
@@ -244,7 +279,7 @@ func (h *HTTPHandler) UpdateProductCount(c *gin.Context) {
 // @Success 200 {object} string "Product image URL updated"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Server error"
-// @Router /update-product-image/{id} [put]
+// @Router /update-product-image/{id} [PUT]
 func (h *HTTPHandler) UpdateProductImage(c *gin.Context) {
 	var req pb.ProductImageUReq
 	req.Id = c.Param("id")

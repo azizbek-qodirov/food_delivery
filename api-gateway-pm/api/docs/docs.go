@@ -42,12 +42,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/genprotos.ProductCReqForSwagger"
                         }
-                    },
-                    {
-                        "type": "file",
-                        "description": "Product image",
-                        "name": "image",
-                        "in": "formData"
                     }
                 ],
                 "responses": {
