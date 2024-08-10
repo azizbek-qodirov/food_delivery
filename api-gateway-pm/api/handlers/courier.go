@@ -73,7 +73,7 @@ func (h *HTTPHandler) AddProductImage(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	c.JSON(200, gin.H{"message": "success"})
+	c.JSON(200, gin.H{"message": "success", "url": minioURL})
 }
 
 // AddProduct godoc
