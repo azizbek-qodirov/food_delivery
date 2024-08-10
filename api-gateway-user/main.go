@@ -24,4 +24,4 @@ func main() {
 	if err := roter.Run(cf.API_GATEWAY_PM_PORT); err != nil {
 		panic(err)
 	}
-}
+} 
